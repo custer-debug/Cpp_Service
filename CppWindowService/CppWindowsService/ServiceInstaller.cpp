@@ -26,16 +26,7 @@ void InstallService(PWSTR pszServiceName,
     if (GetModuleFileName(NULL, szPath, ARRAYSIZE(szPath)) == 0)
     {
         wprintf(L"GetModuleFileName failed w/err 0x%08lx\n", GetLastError());
-		if (schSCManager)
-		{
-			CloseServiceHandle(schSCManager);
-			schSCManager = NULL;
-		}
-		if (schService)
-		{
-			CloseServiceHandle(schService);
-			schService = NULL;
-		}
+		goto Cleanup;
     }
 
     // Открытие менеджера локальной базы данных 
@@ -47,16 +38,7 @@ void InstallService(PWSTR pszServiceName,
     if (schSCManager == NULL)
     {
         wprintf(L"OpenSCManager failed w/err 0x%08lx\n", GetLastError());
-		if (schSCManager)
-		{
-			CloseServiceHandle(schSCManager);
-			schSCManager = NULL;
-		}
-		if (schService)
-		{
-			CloseServiceHandle(schService);
-			schService = NULL;
-		}
+		goto Cleanup;
     }
 
     // Install the service into SCM by calling CreateService
@@ -64,7 +46,7 @@ void InstallService(PWSTR pszServiceName,
         schSCManager,                   // SCManager database
         pszServiceName,                 // Name of service
         pszDisplayName,                 // Name to display
-        SERVICE_QUERY_STATUS,           // Desired access
+		SC_MANAGER_ALL_ACCESS,           // Desired access
         SERVICE_WIN32_OWN_PROCESS,      // Service type
         dwStartType,                    // Service start type
         SERVICE_ERROR_NORMAL,           // Error control type
@@ -78,22 +60,22 @@ void InstallService(PWSTR pszServiceName,
     if (schService == NULL)
     {
         wprintf(L"CreateService failed w/err 0x%08lx\n", GetLastError());
-		if (schSCManager)
-		{
-			CloseServiceHandle(schSCManager);
-			schSCManager = NULL;
-		}
-		if (schService)
-		{
-			CloseServiceHandle(schService);
-			schService = NULL;
-		}
+		goto Cleanup;
     }
 
     wprintf(L"%s is installed.\n", pszServiceName);
 
-
-  
+Cleanup:
+	if (schSCManager)
+	{
+		CloseServiceHandle(schSCManager);
+		schSCManager = NULL;
+	}
+	if (schService)
+	{
+		CloseServiceHandle(schService);
+		schService = NULL;
+	}
 }
 
 

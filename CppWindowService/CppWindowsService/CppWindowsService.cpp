@@ -16,7 +16,7 @@
 #define SERVICE_DISPLAY_NAME     L"CppWindowsService Sample Service"	//Имя сервиса на дисплее
 #define SERVICE_START_TYPE       SERVICE_DEMAND_START					//Оптиция стартового значения севриса
 #define SERVICE_DEPENDENCIES     L""
-#define SERVICE_ACCOUNT          L"NT AUTHORITY\\LocalService"			//Имя учетной записи, под которой должен работать сервис
+#define SERVICE_ACCOUNT          NULL									//Имя учетной записи, под которой должен работать сервис
 #define SERVICE_PASSWORD         NULL									//Пароль сервиса
 
 
