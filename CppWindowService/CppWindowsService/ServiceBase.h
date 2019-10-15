@@ -6,38 +6,34 @@ class CServiceBase
 {
 public:
 
-    // Register the executable for a service with the Service Control Manager 
-    // (SCM). After you call Run(ServiceBase), the SCM issues a Start command, 
-    // which results in a call to the OnStart method in the service. This 
-    // method blocks until the service has stopped.
+	/*
+	*	После вызова Run (ServiceBase) SCM выдает команду Start, 
+	*	что приводит к вызову метода OnStart в службе.
+	*	Этот метод блокируется, пока служба не остановится.
+	*/
     static BOOL Run(CServiceBase &service);
 
-    // Service object constructor. The optional parameters (fCanStop, 
-    // fCanShutdown and fCanPauseContinue) allow you to specify whether the 
-    // service can be stopped, paused and continued, or be notified when 
-    // system shutdown occurs.
     CServiceBase(PWSTR pszServiceName, 
         BOOL fCanStop = TRUE, 
         BOOL fCanShutdown = TRUE, 
         BOOL fCanPauseContinue = FALSE);
 
     // Service object destructor. 
-    virtual ~CServiceBase(void);
+    virtual ~CServiceBase(void) ;
 
     // Stop the service.
     void Stop();
 
 protected:
 
-    // When implemented in a derived class, executes when a Start command is 
-    // sent to the service by the SCM or when the operating system starts 
-    // (for a service that starts automatically). Specifies actions to take 
-    // when the service starts.
     virtual void OnStart(DWORD dwArgc, PWSTR *pszArgv);
 
-    // When implemented in a derived class, executes when a Stop command is 
-    // sent to the service by the SCM. Specifies actions to take when a 
-    // service stops running.
+   /*
+   *	При реализации в производном классе выполняется,
+   *	когда SCM отправляет команду Stop службе. 
+   *	Определяет действия, которые необходимо предпринять, 
+   *	когда служба перестает работать.
+   */
     virtual void OnStop();
 
     // When implemented in a derived class, executes when a Pause command is 
@@ -55,15 +51,15 @@ protected:
     // system shutting down.
     virtual void OnShutdown();
 
-    // Set the service status and report the status to the SCM.
+    // Добавляет событие в SCM
     void SetServiceStatus(DWORD dwCurrentState, 
         DWORD dwWin32ExitCode = NO_ERROR, 
         DWORD dwWaitHint = 0);
 
-    // Log a message to the Application event log.
+    // Сообщает о событии
     void WriteEventLogEntry(PWSTR pszMessage, WORD wType);
 
-    // Log an error message to the Application event log.
+    // Сообщает об ошибки
     void WriteErrorLogEntry(PWSTR pszFunction, 
         DWORD dwError = GetLastError());
 

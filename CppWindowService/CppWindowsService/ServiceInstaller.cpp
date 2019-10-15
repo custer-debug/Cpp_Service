@@ -8,6 +8,7 @@
 #include <windows.h>
 #include "ServiceInstaller.h"
 #pragma endregion
+#pragma warning(disable : 6387)
 
 
 
@@ -25,10 +26,19 @@ void InstallService(PWSTR pszServiceName,
     if (GetModuleFileName(NULL, szPath, ARRAYSIZE(szPath)) == 0)
     {
         wprintf(L"GetModuleFileName failed w/err 0x%08lx\n", GetLastError());
-        goto Cleanup;
+		if (schSCManager)
+		{
+			CloseServiceHandle(schSCManager);
+			schSCManager = NULL;
+		}
+		if (schService)
+		{
+			CloseServiceHandle(schService);
+			schService = NULL;
+		}
     }
 
-    // Open the local default service control manager database
+    // Открытие менеджера локальной базы данных 
     schSCManager = OpenSCManager(
 		NULL,
 		NULL, 
@@ -37,7 +47,16 @@ void InstallService(PWSTR pszServiceName,
     if (schSCManager == NULL)
     {
         wprintf(L"OpenSCManager failed w/err 0x%08lx\n", GetLastError());
-        goto Cleanup;
+		if (schSCManager)
+		{
+			CloseServiceHandle(schSCManager);
+			schSCManager = NULL;
+		}
+		if (schService)
+		{
+			CloseServiceHandle(schService);
+			schService = NULL;
+		}
     }
 
     // Install the service into SCM by calling CreateService
@@ -59,23 +78,22 @@ void InstallService(PWSTR pszServiceName,
     if (schService == NULL)
     {
         wprintf(L"CreateService failed w/err 0x%08lx\n", GetLastError());
-        goto Cleanup;
+		if (schSCManager)
+		{
+			CloseServiceHandle(schSCManager);
+			schSCManager = NULL;
+		}
+		if (schService)
+		{
+			CloseServiceHandle(schService);
+			schService = NULL;
+		}
     }
 
     wprintf(L"%s is installed.\n", pszServiceName);
 
-Cleanup:
-    // Centralized cleanup for all allocated resources.
-    if (schSCManager)
-    {
-        CloseServiceHandle(schSCManager);
-        schSCManager = NULL;
-    }
-    if (schService)
-    {
-        CloseServiceHandle(schService);
-        schService = NULL;
-    }
+
+  
 }
 
 

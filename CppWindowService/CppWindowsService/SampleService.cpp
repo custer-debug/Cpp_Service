@@ -1,28 +1,10 @@
-/****************************** Module Header ******************************\
-* Module Name:  SampleService.cpp
-* Project:      CppWindowsService
-* Copyright (c) Microsoft Corporation.
-* 
-* Provides a sample service class that derives from the service base class - 
-* CServiceBase. The sample service logs the service start and stop 
-* information to the Application event log, and shows how to run the main 
-* function of the service in a thread pool worker thread.
-* 
-* This source is subject to the Microsoft Public License.
-* See http://www.microsoft.com/en-us/openness/resources/licenses.aspx#MPL.
-* All other rights reserved.
-* 
-* THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, 
-* EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED 
-* WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
-\***************************************************************************/
-
 #pragma region Includes
 #include "SampleService.h"
 #include "ThreadPool.h"
 #pragma endregion
 
-
+//Реализация конструктора
+//Создаёт событие дефолтного сервиса
 CSampleService::CSampleService(PWSTR pszServiceName, 
                                BOOL fCanStop, 
                                BOOL fCanShutdown, 
@@ -31,16 +13,17 @@ CSampleService::CSampleService(PWSTR pszServiceName,
 {
     m_fStopping = FALSE;
 
-    // Create a manual-reset event that is not signaled at first to indicate 
-    // the stopped signal of the service.
+    
     m_hStoppedEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+
     if (m_hStoppedEvent == NULL)
     {
         throw GetLastError();
     }
 }
 
-
+//Деструктор закрывает дескриптор,т.е. 
+//число с помощью которого можно идентифицировать ресурс
 CSampleService::~CSampleService(void)
 {
     if (m_hStoppedEvent)
@@ -51,32 +34,15 @@ CSampleService::~CSampleService(void)
 }
 
 
-//
-//   FUNCTION: CSampleService::OnStart(DWORD, LPWSTR *)
-//
-//   PURPOSE: The function is executed when a Start command is sent to the 
-//   service by the SCM or when the operating system starts (for a service 
-//   that starts automatically). It specifies actions to take when the 
-//   service starts. In this code sample, OnStart logs a service-start 
-//   message to the Application log, and queues the main service function for 
-//   execution in a thread pool worker thread.
-//
-//   PARAMETERS:
-//   * dwArgc   - number of command line arguments
-//   * lpszArgv - array of command line arguments
-//
-//   NOTE: A service application is designed to be long running. Therefore, 
-//   it usually polls or monitors something in the system. The monitoring is 
-//   set up in the OnStart method. However, OnStart does not actually do the 
-//   monitoring. The OnStart method must return to the operating system after 
-//   the service's operation has begun. It must not loop forever or block. To 
-//   set up a simple monitoring mechanism, one general solution is to create 
-//   a timer in OnStart. The timer would then raise events in your code 
-//   periodically, at which time your service could do its monitoring. The 
-//   other solution is to spawn a new thread to perform the main service 
-//   functions, which is demonstrated in this code sample.
-//
-void CSampleService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
+/*
+*	Функция CSampleService::OnStart выполняется при запуске службы
+*	и вызывает функцию CServiceBase::WriteEventLogEntry для записи
+*	сведений о запуске в журнал. Также она вызывает функцию CThreadPool::QueueUserWorkItem
+*	для постановки основной функции службы (CSampleService::ServiceWorkerThread)
+*	в очередь на выполнение в рабочем потоке.
+*/
+
+void CSampleService::OnStart(DWORD dwArgc, PWSTR* pszArgv)
 {
     // Log a service start message to the Application log.
     WriteEventLogEntry(L"CppWindowsService in OnStart", 
@@ -87,42 +53,38 @@ void CSampleService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
 }
 
 
-//
-//   FUNCTION: CSampleService::ServiceWorkerThread(void)
-//
-//   PURPOSE: The method performs the main function of the service. It runs 
-//   on a thread pool worker thread.
-//
+
+
+/*
+*	Метод выполняет основную функцию сервиса.
+*	Он работает на рабочем потоке пула потоков.
+*/
+
 void CSampleService::ServiceWorkerThread(void)
 {
-    // Periodically check if the service is stopping.
+    // Проверка, работает ли сервис
     while (!m_fStopping)
     {
-        // Perform main service function here...
+        // Основная функция сервиса располагается здесь...
 
-        ::Sleep(2000);  // Simulate some lengthy operations.
+        ::Sleep(2000);  // Задержка на 2 секунды
     }
 
-    // Signal the stopped event.
+    // Сигнал на остановку
     SetEvent(m_hStoppedEvent);
 }
 
 
-//
-//   FUNCTION: CSampleService::OnStop(void)
-//
-//   PURPOSE: The function is executed when a Stop command is sent to the 
-//   service by SCM. It specifies actions to take when a service stops 
-//   running. In this code sample, OnStop logs a service-stop message to the 
-//   Application log, and waits for the finish of the main service function.
-//
-//   COMMENTS:
-//   Be sure to periodically call ReportServiceStatus() with 
-//   SERVICE_STOP_PENDING if the procedure is going to take long time. 
-//
+/*	
+*	Функция CSampleService::OnStop выполняется при остановке службы и вызывает
+*	функцию CServiceBase::WriteEventLogEntry для записи сведений об остановке в журнал. 
+*	После этого она присваивает переменной m_fStopping значение TRUE, что свидетельствует
+*	о выполнении остановки службы и ожидании завершения основной функции службы, о 
+*	котором сигнализирует объект службы m_hStoppedEvent.
+*/
 void CSampleService::OnStop()
 {
-    // Log a service stop message to the Application log.
+    // Добавление в журнал события
     WriteEventLogEntry(L"CppWindowsService in OnStop", 
         EVENTLOG_INFORMATION_TYPE);
 

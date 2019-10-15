@@ -1,13 +1,16 @@
-/*
-*	Ѕазовый класс дл€ службы
-*
-*/
+
 #pragma region Includes
 #include "ServiceBase.h"
 #include <assert.h>
 #include <strsafe.h>
 #pragma endregion
 #pragma region Static Members
+
+/*
+*
+*	Ѕазовый класс дл€ службы
+*
+*/
 
 // »нициализировать экземпл€р одиночного сервиса.
 CServiceBase *CServiceBase::s_service = NULL;
@@ -57,7 +60,7 @@ BOOL CServiceBase::Run(CServiceBase &service)
 //   * dwArgc   - number of command line arguments
 //   * lpszArgv - array of command line arguments
 //
-void WINAPI CServiceBase::ServiceMain(DWORD dwArgc, PWSTR *pszArgv)
+void WINAPI CServiceBase::ServiceMain(DWORD dwArgc, LPWSTR* lpszArgv)
 {
     assert(s_service != NULL);
 
@@ -70,7 +73,7 @@ void WINAPI CServiceBase::ServiceMain(DWORD dwArgc, PWSTR *pszArgv)
     }
 
     // Start the service.
-    s_service->Start(dwArgc, pszArgv);
+    s_service->Start(dwArgc, lpszArgv);
 }
 
 
@@ -236,7 +239,7 @@ void CServiceBase::Start(DWORD dwArgc, PWSTR *pszArgv)
 //   * dwArgc   - number of command line arguments
 //   * lpszArgv - array of command line arguments
 //
-void CServiceBase::OnStart(DWORD dwArgc, PWSTR *pszArgv)
+void CServiceBase::OnStart(DWORD dwArgc, PWSTR* pszArgv)
 {
 }
 
@@ -440,6 +443,7 @@ void CServiceBase::Shutdown()
 //   is shutting down. Specifies what should occur immediately prior to the 
 //   system shutting down.
 //
+
 void CServiceBase::OnShutdown()
 {
 }
