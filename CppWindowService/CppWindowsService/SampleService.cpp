@@ -5,7 +5,7 @@
 #pragma endregion
 
 
-#define FILE "C:/Users/Romchik/Documents/GitHub/Hmm/time.txt"
+#define FILE "time.txt"
 
 
 //Реализация конструктора
@@ -56,7 +56,6 @@ void CSampleService::OnStart(DWORD dwArgc, PWSTR* pszArgv)
         EVENTLOG_INFORMATION_TYPE);
 
 
-	//HANDLE Thread = CreateThread(NULL,0, ServiceWorkerThread,);
 
     CThreadPool::QueueUserWorkItem(&CSampleService::ServiceWorkerThread, this);
 }
@@ -65,6 +64,7 @@ void CSampleService::OnStart(DWORD dwArgc, PWSTR* pszArgv)
 
 BOOL File() 
 {
+
 	std::fstream fout(FILE);
 	fout << "Hello world";
 	fout.close();
@@ -83,13 +83,13 @@ BOOL File()
 
 void CSampleService::ServiceWorkerThread(void)
 {
-	printf("ServiceWorkerThread \n");
+	//Эта функция выполняется, но непонятно куда сохраняет файл
     // Проверка, работает ли сервис
     while (!m_fStopping)
     {
         // Основная функция сервиса располагается здесь...
 		m_fStopping = File();
-		
+			
         ::Sleep(1000);  // Задержка на 2 секунды
     }
     // Сигнал на остановку

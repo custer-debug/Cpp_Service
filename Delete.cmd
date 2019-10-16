@@ -1,2 +1,2 @@
-cd C:\Users\Romchik\Documents\GitHub\Hmm\CppWindowService\Debug
+cd C:\Users\“¿Õﬂ\Desktop\Hmm\CppWindowService\Debug
 CppWindowsService.exe -remove
