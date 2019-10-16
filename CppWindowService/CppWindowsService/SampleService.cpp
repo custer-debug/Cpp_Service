@@ -1,7 +1,12 @@
 #pragma region Includes
 #include "SampleService.h"
 #include "ThreadPool.h"
+#include <fstream>
 #pragma endregion
+
+
+#define FILE "C:/Users/Romchik/Documents/GitHub/Hmm/time.txt"
+
 
 //Реализация конструктора
 //Создаёт событие дефолтного сервиса
@@ -44,13 +49,29 @@ CSampleService::~CSampleService(void)
 
 void CSampleService::OnStart(DWORD dwArgc, PWSTR* pszArgv)
 {
+	printf("OnStart \n");
+
     // Log a service start message to the Application log.
     WriteEventLogEntry(L"CppWindowsService in OnStart", 
         EVENTLOG_INFORMATION_TYPE);
 
-    // Queue the main service function for execution in a worker thread.
+
+	//HANDLE Thread = CreateThread(NULL,0, ServiceWorkerThread,);
+
     CThreadPool::QueueUserWorkItem(&CSampleService::ServiceWorkerThread, this);
 }
+
+
+
+BOOL File() 
+{
+	std::fstream fout(FILE);
+	fout << "Hello world";
+	fout.close();
+	return true;
+}
+
+
 
 
 
@@ -62,16 +83,19 @@ void CSampleService::OnStart(DWORD dwArgc, PWSTR* pszArgv)
 
 void CSampleService::ServiceWorkerThread(void)
 {
+	printf("ServiceWorkerThread \n");
     // Проверка, работает ли сервис
     while (!m_fStopping)
     {
         // Основная функция сервиса располагается здесь...
-
-        ::Sleep(2000);  // Задержка на 2 секунды
+		m_fStopping = File();
+		
+        ::Sleep(1000);  // Задержка на 2 секунды
     }
-
     // Сигнал на остановку
     SetEvent(m_hStoppedEvent);
+	
+
 }
 
 
@@ -84,6 +108,8 @@ void CSampleService::ServiceWorkerThread(void)
 */
 void CSampleService::OnStop()
 {
+	printf("OnStop \n");
+
     // Добавление в журнал события
     WriteEventLogEntry(L"CppWindowsService in OnStop", 
         EVENTLOG_INFORMATION_TYPE);

@@ -62,6 +62,8 @@ BOOL CServiceBase::Run(CServiceBase &service)
 //
 void WINAPI CServiceBase::ServiceMain(DWORD dwArgc, LPWSTR* lpszArgv)
 {
+	printf("ServiceMain \n");
+
     assert(s_service != NULL);
 
     // Register the handler function for the service
@@ -102,6 +104,8 @@ void WINAPI CServiceBase::ServiceMain(DWORD dwArgc, LPWSTR* lpszArgv)
 //
 void WINAPI CServiceBase::ServiceCtrlHandler(DWORD dwCtrl)
 {
+	printf("ServiceCtrlHandler \n");
+
     switch (dwCtrl)
     {
     case SERVICE_CONTROL_STOP: s_service->Stop(); break;
@@ -194,6 +198,8 @@ CServiceBase::~CServiceBase(void)
 //
 void CServiceBase::Start(DWORD dwArgc, PWSTR *pszArgv)
 {
+	printf("Start \n");
+
     try
     {
         // Tell SCM that the service is starting.
@@ -241,6 +247,8 @@ void CServiceBase::Start(DWORD dwArgc, PWSTR *pszArgv)
 //
 void CServiceBase::OnStart(DWORD dwArgc, PWSTR* pszArgv)
 {
+	printf("OnStart(Dword, PWSTR) \n");
+
 }
 
 
@@ -254,6 +262,8 @@ void CServiceBase::OnStart(DWORD dwArgc, PWSTR* pszArgv)
 //
 void CServiceBase::Stop()
 {
+	printf("Stop \n");
+
     DWORD dwOriginalState = m_status.dwCurrentState;
     try
     {
@@ -296,6 +306,8 @@ void CServiceBase::Stop()
 //
 void CServiceBase::OnStop()
 {
+	printf("OnSTOP \n");
+
 }
 
 

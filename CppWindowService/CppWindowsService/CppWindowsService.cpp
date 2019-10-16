@@ -14,7 +14,7 @@
 
 #define SERVICE_NAME             L"CppWindowsService"					//Имя сервиса
 #define SERVICE_DISPLAY_NAME     L"CppWindowsService Sample Service"	//Имя сервиса на дисплее
-#define SERVICE_START_TYPE       SERVICE_DEMAND_START					//Оптиция стартового значения севриса
+#define SERVICE_START_TYPE       SERVICE_AUTO_START						//Оптиция стартового значения севриса
 #define SERVICE_DEPENDENCIES     L""
 #define SERVICE_ACCOUNT          NULL									//Имя учетной записи, под которой должен работать сервис
 #define SERVICE_PASSWORD         NULL									//Пароль сервиса
@@ -45,7 +45,7 @@ int wmain(int argc, wchar_t *argv[])
             UninstallService(SERVICE_NAME);
         }
     }
-    else
+	else
     {
         wprintf(L"Parameters:\n");
         wprintf(L" -install  to install the service.\n");
@@ -57,6 +57,6 @@ int wmain(int argc, wchar_t *argv[])
             wprintf(L"Service failed to run w/err 0x%08lx\n", GetLastError());
         }
     }
-
+	
     return 0;
 }
