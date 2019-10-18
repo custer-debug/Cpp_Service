@@ -5,7 +5,7 @@
 #pragma endregion
 
 
-#define FILE "time.txt"
+#define FILE "C:\\MyService.txt"
 
 
 //Реализация конструктора
@@ -16,7 +16,7 @@ CSampleService::CSampleService(PWSTR pszServiceName,
                                BOOL fCanPauseContinue)
 : CServiceBase(pszServiceName, fCanStop, fCanShutdown, fCanPauseContinue)
 {
-    m_fStopping = FALSE;
+    m_fStopping = TRUE;
 
     
     m_hStoppedEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -56,19 +56,8 @@ void CSampleService::OnStart(DWORD dwArgc, PWSTR* pszArgv)
         EVENTLOG_INFORMATION_TYPE);
 
 
-
+	Sleep(7000); ///Этот слип для отладки, того чтоб не закончился процесс
     CThreadPool::QueueUserWorkItem(&CSampleService::ServiceWorkerThread, this);
-}
-
-
-
-BOOL File() 
-{
-
-	std::fstream fout(FILE);
-	fout << "Hello world";
-	fout.close();
-	return true;
 }
 
 
@@ -83,16 +72,21 @@ BOOL File()
 
 void CSampleService::ServiceWorkerThread(void)
 {
-	//Эта функция выполняется, но непонятно куда сохраняет файл
-    // Проверка, работает ли сервис
-    while (!m_fStopping)
-    {
-        // Основная функция сервиса располагается здесь...
-		m_fStopping = File();
-			
-        ::Sleep(1000);  // Задержка на 2 секунды
-    }
+	std::fstream file(FILE, std::ios_base::out);
+	if (!file.is_open())
+		SetEvent(m_hStoppedEvent);
+	file << "Hello World";
+	file.close();
+
+
+	//Эта функция выполняется
+    //while (m_fStopping)
+    //{
+    //    // Основная функция сервиса располагается здесь...
+    //    ::Sleep(1000);  // Задержка на 2 секунды
+    //}
     // Сигнал на остановку
+
     SetEvent(m_hStoppedEvent);
 	
 

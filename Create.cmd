@@ -1,1 +1,0 @@
-CppWindowsService.exe -install
