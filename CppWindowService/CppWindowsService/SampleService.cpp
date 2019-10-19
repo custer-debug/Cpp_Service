@@ -6,6 +6,8 @@
 
 
 #define FILE "C:\\MyService.txt"
+//#define FILE_DATE "C:\\Date.txt"
+
 
 
 //Реализация конструктора
@@ -17,7 +19,11 @@ CSampleService::CSampleService(PWSTR pszServiceName,
 : CServiceBase(pszServiceName, fCanStop, fCanShutdown, fCanPauseContinue)
 {
     m_fStopping = FALSE;
-	time = 0;
+	time =		0;
+	second =	0; 
+	minute =	0;
+	hours =		0;
+	day =		0;
     
     m_hStoppedEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
@@ -39,6 +45,10 @@ CSampleService::~CSampleService(void)
 }
 
 
+
+
+
+
 /*
 *	Функция CSampleService::OnStart выполняется при запуске службы
 *	и вызывает функцию CServiceBase::WriteEventLogEntry для записи
@@ -49,13 +59,16 @@ CSampleService::~CSampleService(void)
 
 void CSampleService::OnStart(DWORD dwArgc, PWSTR* pszArgv)
 {
-
-    // Log a service start message to the Application log.
-    WriteEventLogEntry(L"CppWindowsService in OnStart", 
-        EVENTLOG_INFORMATION_TYPE);
-
-
-	Sleep(10000); ///Этот слип для отладки, того чтоб не закончился процесс
+	WriteEventLogEntry(L"CppWindowsService in OnStart",
+		EVENTLOG_INFORMATION_TYPE);
+	std::fstream file(FILE,std::ios_base::in);
+	file >> hours;
+	file.ignore(1);
+	file >> minute;
+	file.ignore(1);
+	file >> second;
+	file.close();
+	time = hours * 360 + minute * 60 + second;
     CThreadPool::QueueUserWorkItem(&CSampleService::ServiceWorkerThread, this);
 }
 
@@ -97,13 +110,17 @@ void CSampleService::ServiceWorkerThread(void)
 */
 void CSampleService::OnStop()
 {
+	second = time % 60;
+	minute = time / 60;
+	hours = minute / 60;
 
     // Добавление в журнал события
     WriteEventLogEntry(L"CppWindowsService in OnStop", 
         EVENTLOG_INFORMATION_TYPE);
 	std::fstream file(FILE, std::ios_base::out, std::ios_base::trunc);
-	file << time / 60 << " мин ";
-	file << time % 60 << " сек ";
+	file << hours << ":";
+	file << minute << ":";
+	file << second << std::endl;
 	file.close();
 
     // Indicate that the service is stopping and wait for the finish of the 
