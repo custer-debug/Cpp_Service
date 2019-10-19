@@ -21,7 +21,7 @@ protected:
 	void CSampleService::ServiceWorkerThread(void);
 
 private:
-
+	int time;
     BOOL m_fStopping;
     HANDLE m_hStoppedEvent;
 };

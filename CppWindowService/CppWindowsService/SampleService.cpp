@@ -16,8 +16,8 @@ CSampleService::CSampleService(PWSTR pszServiceName,
                                BOOL fCanPauseContinue)
 : CServiceBase(pszServiceName, fCanStop, fCanShutdown, fCanPauseContinue)
 {
-    m_fStopping = TRUE;
-
+    m_fStopping = FALSE;
+	time = 0;
     
     m_hStoppedEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
@@ -49,14 +49,13 @@ CSampleService::~CSampleService(void)
 
 void CSampleService::OnStart(DWORD dwArgc, PWSTR* pszArgv)
 {
-	printf("OnStart \n");
 
     // Log a service start message to the Application log.
     WriteEventLogEntry(L"CppWindowsService in OnStart", 
         EVENTLOG_INFORMATION_TYPE);
 
 
-	Sleep(7000); ///Этот слип для отладки, того чтоб не закончился процесс
+	Sleep(10000); ///Этот слип для отладки, того чтоб не закончился процесс
     CThreadPool::QueueUserWorkItem(&CSampleService::ServiceWorkerThread, this);
 }
 
@@ -72,19 +71,15 @@ void CSampleService::OnStart(DWORD dwArgc, PWSTR* pszArgv)
 
 void CSampleService::ServiceWorkerThread(void)
 {
-	std::fstream file(FILE, std::ios_base::out);
-	if (!file.is_open())
-		SetEvent(m_hStoppedEvent);
-	file << "Hello World";
-	file.close();
-
+	
 
 	//Эта функция выполняется
-    //while (m_fStopping)
-    //{
-    //    // Основная функция сервиса располагается здесь...
-    //    ::Sleep(1000);  // Задержка на 2 секунды
-    //}
+    while (!m_fStopping)
+    {
+        // Основная функция сервиса располагается здесь...
+		time++;
+		::Sleep(1000);  
+	}
     // Сигнал на остановку
 
     SetEvent(m_hStoppedEvent);
@@ -102,11 +97,14 @@ void CSampleService::ServiceWorkerThread(void)
 */
 void CSampleService::OnStop()
 {
-	printf("OnStop \n");
 
     // Добавление в журнал события
     WriteEventLogEntry(L"CppWindowsService in OnStop", 
         EVENTLOG_INFORMATION_TYPE);
+	std::fstream file(FILE, std::ios_base::out, std::ios_base::trunc);
+	file << time / 60 << " мин ";
+	file << time % 60 << " сек ";
+	file.close();
 
     // Indicate that the service is stopping and wait for the finish of the 
     // main service function (ServiceWorkerThread).

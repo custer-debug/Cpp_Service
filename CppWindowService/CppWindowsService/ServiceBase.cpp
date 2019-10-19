@@ -198,7 +198,6 @@ CServiceBase::~CServiceBase(void)
 //
 void CServiceBase::Start(DWORD dwArgc, PWSTR *pszArgv)
 {
-	printf("Start \n");
 
     try
     {
@@ -262,7 +261,6 @@ void CServiceBase::OnStart(DWORD dwArgc, PWSTR* pszArgv)
 //
 void CServiceBase::Stop()
 {
-	printf("Stop \n");
 
     DWORD dwOriginalState = m_status.dwCurrentState;
     try
@@ -306,7 +304,6 @@ void CServiceBase::Stop()
 //
 void CServiceBase::OnStop()
 {
-	printf("OnSTOP \n");
 
 }
 
