@@ -2,6 +2,8 @@
 #include "SampleService.h"
 #include "ThreadPool.h"
 #include <fstream>
+#include <string>
+#include <vector>
 #pragma endregion
 
 
@@ -126,6 +128,9 @@ void CSampleService::ServiceWorkerThread(void)
 }
 
 
+
+
+
 /*	
 *	Функция CSampleService::OnStop выполняется при остановке службы и вызывает
 *	функцию CServiceBase::WriteEventLogEntry для записи сведений об остановке в журнал. 
@@ -145,20 +150,45 @@ void CSampleService::OnStop()
 	SYSTEMTIME st;
 	GetSystemTime(&st);
 	
-	std::fstream file;
-	if (day != st.wDay)
-		file.open(FILE,std::ios_base::out | std::ios_base::app);
+	if (day == st.wDay)
+	{
+		std::fstream file1(FILE, std::ios_base::in);
+		std::string s;
+		std::vector<std::string> vec;
+		while (getline(file1,s))
+		{
+			vec.push_back(s);
+		}
+		file1.close();
+		vec.erase(vec.end() - 2);
+		s.clear();
+		std::fstream file2(FILE, std::ios_base::out | std::ios_base::trunc);
+		for (auto& item : vec)
+			file2 << item << std::endl; 
+
+		file2 << st.wDay << ".";
+		file2 << st.wMonth << ".";
+		file2 << st.wYear << " ";
+		file2 << hours << ":";
+		file2 << minute << ":";
+		file2 << second << std::endl;
+		
+		file2.close();
+	}
 	else
-		file.open(FILE, std::ios_base::out | std::ios_base::trunc);
+	{
 
+		std::fstream file(FILE, std::ios_base::out);
+		file << st.wDay << ".";
+		file << st.wMonth << ".";
+		file << st.wYear << " ";
+		file << hours << ":";
+		file << minute << ":";
+		file << second << std::endl;
+		file.close();
 
-	file << st.wDay << ".";
-	file << st.wMonth << ".";
-	file << st.wYear << " ";
-	file << hours << ":";
-	file << minute << ":";
-	file << second << std::endl;
-	file.close();
+	}
+
 
 
 
