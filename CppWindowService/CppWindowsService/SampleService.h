@@ -22,10 +22,9 @@ protected:
 
 private:
 	int time;
-	int second;
-	int minute;
-	int hours;
-	int day;
+	int second,minute,hours;
+	int day,month,year;
+	
 	BOOL m_fStopping;
     HANDLE m_hStoppedEvent;
 };
