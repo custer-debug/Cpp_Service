@@ -90,27 +90,27 @@ void CSampleService::ServiceWorkerThread(void)
 	SYSTEMTIME st;
 	GetSystemTime(&st);
 
-	std::fstream file(FILE, std::ios_base::in);
+	std::fstream file3(FILE, std::ios_base::in);
 
-	file >> day;
-	file.ignore(1);
+	file3 >> day;
+	file3.ignore(1);
 	if (day == st.wDay)
 	{
-		file >> month;
-		file.ignore(1);
-		file >> year;
-		file.ignore(1);
-		file >> hours;
-		file.ignore(1);
-		file >> minute;
-		file.ignore(1);
-		file >> second;
+		file3 >> month;
+		file3.ignore(1);
+		file3 >> year;
+		file3.ignore(1);
+		file3 >> hours;
+		file3.ignore(1);
+		file3 >> minute;
+		file3.ignore(1);
+		file3 >> second;
 		time = hours * 60 * 60 + minute * 60 + second;
 	}
 
 
 
-	file.close();
+	file3.close();
 
 
 	//Эта функция выполняется
@@ -129,6 +129,21 @@ void CSampleService::ServiceWorkerThread(void)
 
 
 
+void Change_Element(std::vector<std::string>& Vec) 
+{
+
+	std::string str = *(Vec.end() - 1);
+	std::vector<std::string> New_Vector = {str};
+	auto it = Vec.begin();
+	for (; it != Vec.end() - 1; it++)
+		New_Vector.push_back(*it);
+
+	std::fstream stream(FILE, std::ios_base::out | std::ios_base::trunc);
+	for (const auto& item : New_Vector)
+		stream << item << std::endl;
+	stream.close();
+
+}
 
 
 /*	
@@ -141,7 +156,7 @@ void CSampleService::ServiceWorkerThread(void)
 void CSampleService::OnStop()
 {
 	second = time % 60;
-	minute = time / 60;
+	minute = (time / 60) % 60;
 	hours = minute / 60;
 
     // Добавление в журнал события
@@ -150,47 +165,21 @@ void CSampleService::OnStop()
 	SYSTEMTIME st;
 	GetSystemTime(&st);
 	
-	if (day == st.wDay)
-	{
-		std::fstream file1(FILE, std::ios_base::in);
-		std::string s;
-		std::vector<std::string> vec;
-		while (getline(file1,s))
-		{
-			vec.push_back(s);
-		}
-		file1.close();
-		vec.erase(vec.end() - 2);
-		s.clear();
-		std::fstream file2(FILE, std::ios_base::out | std::ios_base::trunc);
-		for (auto& item : vec)
-			file2 << item << std::endl; 
+	std::fstream fout(FILE,std::ios_base::out | std::ios_base::app); //Add new timer's value
+	fout << st.wDay << "." << st.wMonth << "." << st.wYear << " ";
+	fout << hours << ":" << minute << ":" << second;
+	fout.close();
 
-		file2 << st.wDay << ".";
-		file2 << st.wMonth << ".";
-		file2 << st.wYear << " ";
-		file2 << hours << ":";
-		file2 << minute << ":";
-		file2 << second << std::endl;
-		
-		file2.close();
-	}
-	else
-	{
+	std::string s;
+	std::vector<std::string> Vector;
 
-		std::fstream file(FILE, std::ios_base::out);
-		file << st.wDay << ".";
-		file << st.wMonth << ".";
-		file << st.wYear << " ";
-		file << hours << ":";
-		file << minute << ":";
-		file << second << std::endl;
-		file.close();
-
-	}
+	std::fstream _file(FILE, std::ios_base::in);		
+	while (std::getline(_file, s))					//Read FILE
+		Vector.push_back(s);
+	_file.close();
 
 
-
+	Change_Element(Vector); //Put last item first
 
     // Indicate that the service is stopping and wait for the finish of the 
     // main service function (ServiceWorkerThread).
