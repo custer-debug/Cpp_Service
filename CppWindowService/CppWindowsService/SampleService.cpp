@@ -131,19 +131,30 @@ void CSampleService::ServiceWorkerThread(void)
 
 void Change_Element(std::vector<std::string>& Vec) 
 {
+	std::string s = *(Vec.end() - 1);
+	Vec[0] = s;
+	Vec.pop_back();
+	std::fstream stream(FILE,std::ios_base::out | std::ios_base::trunc);
+	for (const auto& item : Vec)
+		stream << item << std::endl;
+	stream.close();
+}
 
+
+
+void Paste_Element(std::vector<std::string>& Vec)
+{
 	std::string str = *(Vec.end() - 1);
-	std::vector<std::string> New_Vector = {str};
+	std::vector<std::string> New_Vector = { str };
 	auto it = Vec.begin();
 	for (; it != Vec.end() - 1; it++)
 		New_Vector.push_back(*it);
-
 	std::fstream stream(FILE, std::ios_base::out | std::ios_base::trunc);
 	for (const auto& item : New_Vector)
 		stream << item << std::endl;
 	stream.close();
-
 }
+
 
 
 /*	
@@ -178,8 +189,14 @@ void CSampleService::OnStop()
 		Vector.push_back(s);
 	_file.close();
 
+	if (day == st.wDay) 
+		Change_Element(Vector); //Put last item first
+	else
+		Paste_Element(Vector); 
 
-	Change_Element(Vector); //Put last item first
+
+
+
 
     // Indicate that the service is stopping and wait for the finish of the 
     // main service function (ServiceWorkerThread).
