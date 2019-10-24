@@ -166,9 +166,9 @@ void Paste_Element(std::vector<std::string>& Vec)
 */
 void CSampleService::OnStop()
 {
+	hours = time / 60 / 60;
+	minute = time / 60 % 60;
 	second = time % 60;
-	minute = (time / 60) % 60;
-	hours = minute / 60;
 
     // Добавление в журнал события
     WriteEventLogEntry(L"CppWindowsService in OnStop", 

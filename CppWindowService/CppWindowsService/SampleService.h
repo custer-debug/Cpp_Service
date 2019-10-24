@@ -15,8 +15,8 @@ public:
 
 protected:
 
-    virtual void OnStart(DWORD dwArgc, PWSTR *pszArgv) override;
-    virtual void OnStop() override;
+    virtual void OnStart(DWORD dwArgc, PWSTR *pszArgv);
+    virtual void OnStop();
 
 	void CSampleService::ServiceWorkerThread(void);
 
