@@ -246,7 +246,6 @@ void CServiceBase::Start(DWORD dwArgc, PWSTR *pszArgv)
 //
 void CServiceBase::OnStart(DWORD dwArgc, PWSTR* pszArgv)
 {
-	printf("OnStart(Dword, PWSTR) \n");
 
 }
 
@@ -455,6 +454,7 @@ void CServiceBase::Shutdown()
 
 void CServiceBase::OnShutdown()
 {
+	OnStop();
 }
 
 #pragma endregion
