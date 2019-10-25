@@ -62,7 +62,6 @@ BOOL CServiceBase::Run(CServiceBase &service)
 //
 void WINAPI CServiceBase::ServiceMain(DWORD dwArgc, LPWSTR* lpszArgv)
 {
-	printf("ServiceMain \n");
 
     assert(s_service != NULL);
 
@@ -205,7 +204,7 @@ void CServiceBase::Start(DWORD dwArgc, PWSTR *pszArgv)
         SetServiceStatus(SERVICE_START_PENDING);
 
         // Perform service-specific initialization.
-        OnStart(dwArgc, pszArgv);
+        OnStart();
 
         // Tell SCM that the service is started.
         SetServiceStatus(SERVICE_RUNNING);
@@ -244,7 +243,7 @@ void CServiceBase::Start(DWORD dwArgc, PWSTR *pszArgv)
 //   * dwArgc   - number of command line arguments
 //   * lpszArgv - array of command line arguments
 //
-void CServiceBase::OnStart(DWORD dwArgc, PWSTR* pszArgv)
+void CServiceBase::OnStart()
 {
 
 }
@@ -357,6 +356,7 @@ void CServiceBase::Pause()
 //
 void CServiceBase::OnPause()
 {
+	OnStop();
 }
 
 
@@ -410,6 +410,7 @@ void CServiceBase::Continue()
 //
 void CServiceBase::OnContinue()
 {
+	OnStart();
 }
 
 

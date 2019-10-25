@@ -61,7 +61,7 @@ CSampleService::~CSampleService(void)
 *	в очередь на выполнение в рабочем потоке.
 */
 
-void CSampleService::OnStart(DWORD dwArgc, PWSTR* pszArgv)
+void CSampleService::OnStart()
 {
 	WriteEventLogEntry(L"CppWindowsService in OnStart",
 		EVENTLOG_INFORMATION_TYPE);

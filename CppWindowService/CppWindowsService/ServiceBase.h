@@ -26,7 +26,7 @@ public:
 
 protected:
 
-    virtual void OnStart(DWORD dwArgc, PWSTR *pszArgv);
+    virtual void OnStart();
 
    /*
    *	При реализации в производном классе выполняется,
